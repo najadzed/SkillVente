@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillVente Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-fadeInUp { animation: fadeInUp 0.3s ease-out forwards; }
+
+    .card { 
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem; 
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+    .card:hover { 
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25), 0 0 15px rgba(0,255,255,0.4);
+    }
+
+    .gradient-text { 
+      background: linear-gradient(90deg, #06b6d4, #3b82f6, #9333ea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hover-glow:hover {
+      box-shadow: 0 0 15px rgba(0,255,255,0.7);
+      transform: translateX(6px);
+    }
+
+    /* Smooth dropdown animation */
+    .dropdown-enter { opacity: 0; transform: translateY(10px) scale(0.95); }
+    .dropdown-enter-active { opacity: 1; transform: translateY(0) scale(1); transition: all 0.2s ease-out; }
+    .dropdown-exit { opacity: 1; transform: translateY(0) scale(1); }
+    .dropdown-exit-active { opacity: 0; transform: translateY(10px) scale(0.95); transition: all 0.15s ease-in; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 font-sans">
+
+  <div class="flex h-screen">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gradient-to-b from-indigo-500 via-blue-500 to-cyan-400 text-white flex flex-col shadow-2xl">
+      <div class="p-6 text-2xl font-bold flex items-center space-x-2">
+        <i data-feather="zap" class="w-6 h-6 text-yellow-300 drop-shadow"></i>
+        <span>SkillVente</span>
+      </div>
+      <nav class="flex-1">
+        <ul class="space-y-1">
+          <li><a href="{% url 'dashboard' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="home" class="w-5 h-5 mr-3"></i> Dashboard</a></li>
+          <li><a href="{% url 'profile' request.user.username %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="user" class="w-5 h-5 mr-3"></i> My Profile</a></li>
+          <li><a href="{% url 'my_skills' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="tool" class="w-5 h-5 mr-3"></i> My Skills</a></li>
+          <li><a href="{% url 'find_skills' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="search" class="w-5 h-5 mr-3"></i> Find Skills</a></li>
+          <li><a href="{% url 'swap_requests' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="shuffle" class="w-5 h-5 mr-3"></i> Swap Requests</a></li>
+          <li><a href="{% url 'reviews' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="star" class="w-5 h-5 mr-3 text-yellow-300"></i> Reviews</a></li>
+          <li><a href="{% url 'logout' %}" class="flex items-center px-6 py-3 rounded-lg transition hover:bg-red-500 hover:shadow-lg"><i data-feather="log-out" class="w-5 h-5 mr-3"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex">
+
+      <!-- Content -->
+      <main class="flex-1 overflow-y-auto">
+
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur shadow p-6 flex justify-between items-center animate-fadeInUp relative z-40">
+          <h1 class="text-3xl font-extrabold gradient-text flex items-center">
+            <i data-feather="home" class="w-7 h-7 mr-2"></i> Dashboard
+          </h1>
+
+          <!-- Notifications -->
+          <div class="relative" id="notifWrapper">
+            <button id="notifBtn" class="relative focus:outline-none">
+              <i data-feather="bell" class="w-6 h-6 text-gray-700"></i>
+              {% if notifications %}
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow">
+                  {{ notifications|length }}
+                </span>
+              {% endif %}
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notifDropdown"
+                class="hidden absolute right-0 mt-3 w-80 
+                      bg-white rounded-lg shadow-2xl border border-gray-200 
+                      overflow-hidden z-50">
+              <div class="p-4 border-b bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold">
+                🔔 Notifications
+              </div>
+              <ul class="max-h-72 overflow-y-auto divide-y divide-gray-200">
+                {% for notif in notifications %}
+                  <li class="p-4 hover:bg-gray-50 text-sm text-gray-700">
+                    {{ notif.message }}
+                    <p class="text-xs text-gray-400">{{ notif.created_at|timesince }} ago</p>
+                  </li>
+                {% empty %}
+                  <li class="p-4 text-gray-500 text-sm">No new notifications</li>
+                {% endfor %}
+              </ul>
+              <div class="p-3 text-center bg-gray-50">
+                <a href="{% url 'notifications' %}" class="text-blue-600 hover:underline text-sm">View all</a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <section class="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="card bg-gradient-to-r from-cyan-400 to-blue-500 text-white p-6 text-center">
+            <p class="text-3xl font-bold">{{ skills|length }}</p>
+            <p class="mt-1 text-sm opacity-90">My Skills</p>
+          </div>
+          <div class="card bg-gradient-to-r from-green-400 to-emerald-500 text-white p-6 text-center">
+            <p class="text-3xl font-bold">{{ incoming_requests|length }}</p>
+            <p class="mt-1 text-sm opacity-90">Pending Requests</p>
+          </div>
+          <div class="card bg-gradient-to-r from-yellow-300 to-orange-500 text-white p-6 text-center">
+            <p class="text-3xl font-bold">{{ reviews_received|length }}</p>
+            <p class="mt-1 text-sm opacity-90">Reviews</p>
+          </div>
+          <div class="card bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 text-center">
+            <p class="text-3xl font-bold">{{ chats|length }}</p>
+            <p class="mt-1 text-sm opacity-90">Active Chats</p>
+          </div>
+        </section>
+
+        <!-- Profile + Skills -->
+        <section class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Profile Info -->
+          <div class="card p-6 animate-fadeInUp">
+            <div class="flex items-center gap-4 mb-4">
+              {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="w-20 h-20 rounded-full object-cover border-4 border-cyan-300 shadow">
+              {% else %}
+                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center text-white text-2xl font-bold">
+                  {{ request.user.username|slice:":1"|upper }}
+                </div>
+              {% endif %}
+              <div>
+                <h2 class="text-xl font-semibold">{{ profile.full_name|default:request.user.username }}</h2>
+                <p class="text-gray-500">{{ profile.location|default:"Not set" }}</p>
+              </div>
+            </div>
+            <p class="mb-2"><span class="font-semibold">Bio:</span> {{ profile.bio|default:"No bio yet." }}</p>
+            <p><span class="font-semibold">Looking to Learn:</span> {{ profile.looking_to_learn|default:"Not specified" }}</p>
+            <a href="{% url 'edit_profile' %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">✏️ Edit Profile</a>
+          </div>
+
+          <!-- My Skills -->
+          <div class="card p-6 animate-fadeInUp">
+            <h2 class="text-lg font-semibold mb-4 flex items-center gradient-text"><i data-feather="tool" class="w-5 h-5 mr-2"></i> My Skills</h2>
+            {% if skills %}
+              <ul class="list-disc pl-5 space-y-1">
+                {% for skill in skills %}
+                  <li class="capitalize">
+                    {{ skill.name }} ({{ skill.category }}) 
+                    {% if skill.can_teach %}
+                      <span class="text-green-600 font-semibold">[Can Teach]</span>
+                    {% else %}
+                      <span class="text-blue-600 font-semibold">[Wants to Learn]</span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-gray-500">You have not added any skills yet.</p>
+            {% endif %}
+            <a href="{% url 'add_skill' %}" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">➕ Add Skill</a>
+          </div>
+        </section>
+
+        <!-- Top Reviewed Profiles -->
+        <section class="p-6">
+          <div class="card p-6 animate-fadeInUp">
+            <h2 class="text-lg font-semibold mb-6 flex items-center gradient-text"><i data-feather="award" class="w-5 h-5 mr-2 text-yellow-500"></i> Top Reviewed Profiles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {% for top_user in top_reviewed %}
+                <div class="card p-6 flex flex-col items-center text-center">
+                  {% if top_user.profile.profile_image %}
+                    <img src="{{ top_user.profile.profile_image.url }}" class="w-20 h-20 rounded-full object-cover border-4 border-yellow-400 shadow mb-3">
+                  {% else %}
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold mb-3">
+                      {{ top_user.username|slice:":1"|upper }}
+                    </div>
+                  {% endif %}
+                  <h3 class="text-lg font-semibold">{{ top_user.username }}</h3>
+                  <p class="text-yellow-500 font-medium mb-2">⭐ {{ top_user.avg_rating|default:"0"|floatformat:1 }}/5</p>
+                  <p class="text-sm text-gray-600 mb-2">{{ top_user.profile.bio|default:"No bio available."|truncatewords:15 }}</p>
+                  <p class="text-xs text-gray-400">{{ top_user.profile.location|default:"Unknown location" }}</p>
+                  <a href="{% url 'profile_view' top_user.username %}" class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">View Profile</a>
+                </div>
+              {% empty %}
+                <p class="text-gray-500">No reviews yet.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Right Sidebar -->
+      <aside class="w-80 bg-gradient-to-b from-white/80 to-gray-100/80 border-l border-gray-200 backdrop-blur p-6">
+        <h2 class="text-lg font-semibold mb-4 flex items-center gradient-text"><i data-feather="activity" class="w-5 h-5 mr-2"></i> Recent Activity</h2>
+        <ul class="space-y-4">
+          {% for activity in recent_activity %}
+            <li class="card p-3">
+              <p class="text-sm text-gray-700">{{ activity.description }}</p>
+              <p class="text-xs text-gray-400">{{ activity.timestamp|timesince }} ago</p>
+            </li>
+          {% empty %}
+            <p class="text-gray-500">No recent activity.</p>
+          {% endfor %}
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+
+    // Notifications toggle with smooth animation
+    const notifBtn = document.getElementById("notifBtn");
+    const notifDropdown = document.getElementById("notifDropdown");
+
+    notifBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (notifDropdown.classList.contains("hidden")) {
+        notifDropdown.classList.remove("hidden", "dropdown-exit", "dropdown-exit-active");
+        notifDropdown.classList.add("dropdown-enter");
+        setTimeout(() => notifDropdown.classList.add("dropdown-enter-active"), 10);
+      } else {
+        notifDropdown.classList.remove("dropdown-enter", "dropdown-enter-active");
+        notifDropdown.classList.add("dropdown-exit");
+        setTimeout(() => {
+          notifDropdown.classList.add("dropdown-exit-active");
+          setTimeout(() => notifDropdown.classList.add("hidden"), 150);
+        }, 10);
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!notifWrapper.contains(e.target)) {
+        notifDropdown.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

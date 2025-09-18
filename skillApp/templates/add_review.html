@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    .card {background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);border-radius:1rem;box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+    .gradient-text {background:linear-gradient(90deg,#06b6d4,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hover-glow:hover {box-shadow:0 0 15px rgba(0,255,255,0.7);transform:translateX(6px);}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 font-sans">
+<div class="flex h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-500 via-blue-500 to-cyan-400 text-white flex flex-col shadow-2xl">
+    <div class="p-6 text-2xl font-bold flex items-center space-x-2">
+      <i data-feather="zap" class="w-6 h-6 text-yellow-300 drop-shadow"></i>
+      <span>SkillVente</span>
+    </div>
+    <nav class="flex-1">
+      <ul class="space-y-1">
+        <li><a href="{% url 'dashboard' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="home" class="w-5 h-5 mr-3"></i> Dashboard</a></li>
+        <li><a href="{% url 'profile' request.user.username %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="user" class="w-5 h-5 mr-3"></i> My Profile</a></li>
+        <li><a href="{% url 'my_skills' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="tool" class="w-5 h-5 mr-3"></i> My Skills</a></li>
+        <li><a href="{% url 'find_skills' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="search" class="w-5 h-5 mr-3"></i> Find Skills</a></li>
+        <li><a href="{% url 'swap_requests' %}" class="flex items-center px-6 py-3 rounded-lg transition hover-glow"><i data-feather="shuffle" class="w-5 h-5 mr-3"></i> Swap Requests</a></li>
+        <li><a href="{% url 'reviews' %}" class="flex items-center px-6 py-3 rounded-lg bg-white/20"><i data-feather="star" class="w-5 h-5 mr-3 text-yellow-300"></i> Reviews</a></li>
+        <li><a href="{% url 'logout' %}" class="flex items-center px-6 py-3 rounded-lg transition hover:bg-red-500 hover:shadow-lg"><i data-feather="log-out" class="w-5 h-5 mr-3"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col">
+    <header class="bg-white/80 backdrop-blur shadow p-6">
+      <h1 class="text-3xl font-extrabold gradient-text flex items-center">
+        <i data-feather="plus-circle" class="w-7 h-7 mr-2"></i> Add Review
+      </h1>
+    </header>
+
+    <section class="p-6 flex justify-center">
+      <form method="post" class="card w-full max-w-lg p-6 space-y-4">
+        {% csrf_token %}
+        <label class="block">
+          <span class="font-semibold">Rating:</span>
+          <select name="rating" class="w-full border rounded px-3 py-2">
+            <option value="5">⭐ 5 - Excellent</option>
+            <option value="4">⭐ 4 - Good</option>
+            <option value="3">⭐ 3 - Average</option>
+            <option value="2">⭐ 2 - Poor</option>
+            <option value="1">⭐ 1 - Terrible</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="font-semibold">Comment:</span>
+          <textarea name="comment" rows="4" class="w-full border rounded px-3 py-2"></textarea>
+        </label>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+          <i data-feather="send" class="w-5 h-5"></i> Submit Review
+        </button>
+      </form>
+    </section>
+  </div>
+</div>
+<script>feather.replace()</script>
+</body>
+</html>

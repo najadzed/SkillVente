@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillVente - Learn & Share Skills</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome (premium icons) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(90deg,#06b6d4,#3b82f6,#9333ea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      padding: 140px 20px;
+      border-radius: 0 0 60px 60px;
+      overflow: hidden;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      margin-top: 15px;
+      max-width: 500px;
+    }
+    .btn-cta {
+      margin-top: 30px;
+      padding: 14px 34px;
+      border-radius: 40px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-cta:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Animated blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.6;
+      animation: float 12s infinite ease-in-out;
+    }
+    .blob1 { width: 300px; height: 300px; background: #ff0080; top: -50px; left: -80px; }
+    .blob2 { width: 250px; height: 250px; background: #00f0ff; bottom: -80px; right: -60px; animation-delay: 3s; }
+    .blob3 { width: 200px; height: 200px; background: #ffd700; top: 40%; left: 60%; animation-delay: 6s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-40px) translateX(30px); }
+    }
+
+    /* Features */
+    .features {
+      margin-top: -60px;
+      position: relative;
+      z-index: 2;
+    }
+    .feature-box {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 16px 35px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #2575fc;
+      margin-bottom: 20px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      color: white;
+      padding: 100px 30px;
+      border-radius: 30px;
+      margin: 100px auto;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section h2 {
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+    .cta-section .blob {
+      filter: blur(80px);
+    }
+
+    /* Footer */
+    footer {
+      background: #111;
+      color: #bbb;
+      padding: 50px 0;
+    }
+    footer a {
+      color: #bbb;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    footer a:hover {
+      color: white;
+    }
+    .social-icons i {
+      font-size: 1.4rem;
+      margin: 0 8px;
+      transition: 0.3s;
+    }
+    .social-icons i:hover {
+      color: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">SkillVente</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+          <li class="nav-item"><a href="{% url 'register' %}" class="nav-link">Register</a></li>
+          <li class="nav-item"><a href="{% url 'login' %}" class="btn btn-primary ms-3 px-4 rounded-pill">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero text-center text-md-start">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="container position-relative">
+      <div class="row align-items-center">
+        <div class="col-md-7">
+          <h1><i class="fa-solid fa-bolt me-2"></i> Learn & Grow with <span style="color:#facc15;">SkillVente</span></h1>
+          <p>Swap skills, share knowledge, and grow your network in a vibrant community of learners and creators.</p>
+          <a href="{% url 'register' %}" class="btn btn-light btn-cta"><i class="fa-solid fa-user-plus me-2"></i> Get Started</a>
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-cta"><i class="fa-solid fa-right-to-bracket me-2"></i> Login</a>
+        </div>
+        <div class="col-md-5 text-center mt-5 mt-md-0">
+          <i class="fa-solid fa-layer-group" style="font-size: 9rem; opacity:0.85;"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="container features py-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-people-arrows"></i></div>
+          <h5>Skill Swapping</h5>
+          <p>Share what you know and learn what you don’t. Build your expertise while helping others.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+          <h5>Global Networking</h5>
+          <p>Connect with mentors and learners across borders, cultures, and professions.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-star"></i></div>
+          <h5>Trusted Reviews</h5>
+          <p>Grow your credibility through feedback and ratings from real skill swaps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="container">
+    <div class="cta-section">
+      <div class="blob blob1"></div>
+      <div class="blob blob2"></div>
+      <h2><i class="fa-solid fa-lightbulb me-2"></i> Start Your Learning Journey</h2>
+      <p class="lead">Join thousands of learners worldwide and unlock limitless opportunities with SkillVente.</p>
+      <a href="{% url 'register' %}" class="btn btn-light btn-lg btn-cta mt-3"><i class="fa-solid fa-rocket me-2"></i> Join Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container text-center">
+      <p>&copy; 2025 SkillVente. All Rights Reserved.</p>
+      <div class="social-icons mt-2">
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
