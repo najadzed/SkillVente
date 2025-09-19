@@ -22,7 +22,7 @@ def dashboard(request):
     profile = request.user.profile
     skills = profile.skills.all()
 
-    # ✅ Check if profile image is default
+    # ✅ Check if current user profile image is default
     is_default_profile_image = False
     if profile.profile_image and profile.profile_image.name.endswith("default.png"):
         is_default_profile_image = True
@@ -72,6 +72,13 @@ def dashboard(request):
         .order_by("-avg_rating")[:6]
     )
 
+    # Attach default image flag to each top_user
+    for u in top_reviewed:
+        u.is_default_profile_image = (
+            u.profile.profile_image
+            and u.profile.profile_image.name.endswith("default.png")
+        )
+
     # ✅ Recent Activity
     recent_activity = []
 
@@ -85,11 +92,10 @@ def dashboard(request):
         "chats": chats,
         "top_reviewed": top_reviewed,
         "recent_activity": recent_activity,
-        "is_default_profile_image": is_default_profile_image,  # 👈 added
+        "is_default_profile_image": is_default_profile_image,  # 👈 current user
     }
 
     return render(request, "dashboard.html", context)
-
 # Password Reset Request View
 class CustomPasswordResetView(auth_views.PasswordResetView):
     template_name = "password_reset.html"
