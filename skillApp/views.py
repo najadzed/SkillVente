@@ -22,6 +22,11 @@ def dashboard(request):
     profile = request.user.profile
     skills = profile.skills.all()
 
+    # ✅ Check if profile image is default
+    is_default_profile_image = False
+    if profile.profile_image and profile.profile_image.name.endswith("default.png"):
+        is_default_profile_image = True
+
     # ✅ Notifications
     notifications = (
         request.user.notifications.all().order_by("-created_at")
@@ -39,7 +44,7 @@ def dashboard(request):
         else []
     )
 
-    # ✅ Reviews (received & given)
+    # ✅ Reviews
     reviews_received = (
         Review.objects.filter(swap_request__to_user=request.user)
         .select_related("swap_request", "reviewer")
@@ -67,8 +72,8 @@ def dashboard(request):
         .order_by("-avg_rating")[:6]
     )
 
-    # ✅ Recent Activity (placeholder)
-    recent_activity = []  # TODO: Hook this with Activity model if added later
+    # ✅ Recent Activity
+    recent_activity = []
 
     context = {
         "profile": profile,
@@ -80,6 +85,7 @@ def dashboard(request):
         "chats": chats,
         "top_reviewed": top_reviewed,
         "recent_activity": recent_activity,
+        "is_default_profile_image": is_default_profile_image,  # 👈 added
     }
 
     return render(request, "dashboard.html", context)
